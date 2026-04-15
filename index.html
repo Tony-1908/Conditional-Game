@@ -23,17 +23,18 @@ header {
     margin-top: 40px;
 }
 
+#answers {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
 button {
     padding: 12px 20px;
-    margin: 10px;
     border: none;
     border-radius: 12px;
     font-size: 16px;
     cursor: pointer;
-}
-
-button:hover {
-    transform: scale(1.05);
 }
 
 .correct { background-color: #28a745; }
@@ -43,11 +44,16 @@ button:hover {
     display: none;
     background-color: #ffc107;
     color: black;
+    margin-top: 20px;
 }
 
 #restartBtn {
     display: none;
     background-color: #007bff;
+}
+
+#lives {
+    font-size: 20px;
 }
 </style>
 
@@ -57,7 +63,7 @@ button:hover {
 
 <header>
     <h1>🎮 Conditional Quest</h1>
-    <p>Learn English Conditionals while playing</p>
+    <p id="lives">❤️❤️❤️</p>
 </header>
 
 <div class="container">
@@ -74,6 +80,7 @@ button:hover {
 
 let score = 0;
 let current = 0;
+let lives = 3;
 
 const questions = [
 
@@ -103,28 +110,38 @@ const answersEl = document.getElementById("answers");
 const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("nextBtn");
 const restartBtn = document.getElementById("restartBtn");
+const livesEl = document.getElementById("lives");
 
 function loadQuestion() {
     let q = questions[current];
     questionEl.innerText = q.q;
     answersEl.innerHTML = "";
 
-    q.a.forEach((answer, index) => {
+    let answers = q.a.map((text, index) => ({
+        text: text,
+        correct: index === q.correct
+    }));
+
+    // Mezclar respuestas
+    answers.sort(() => Math.random() - 0.5);
+
+    answers.forEach((answer) => {
         let btn = document.createElement("button");
-        btn.innerText = answer;
-        btn.onclick = () => checkAnswer(index);
+        btn.innerText = answer.text;
+
+        btn.onclick = () => checkAnswer(answer.correct);
+
         answersEl.appendChild(btn);
     });
 
     nextBtn.style.display = "none";
 }
 
-function checkAnswer(index) {
-    let q = questions[current];
+function checkAnswer(isCorrect) {
     let buttons = document.querySelectorAll("#answers button");
 
-    buttons.forEach((btn, i) => {
-        if (i === q.correct) {
+    buttons.forEach((btn) => {
+        if (btn.innerText === questions[current].a[questions[current].correct]) {
             btn.classList.add("correct");
         } else {
             btn.classList.add("wrong");
@@ -132,12 +149,31 @@ function checkAnswer(index) {
         btn.disabled = true;
     });
 
-    if (index === q.correct) {
+    if (isCorrect) {
         score++;
         scoreEl.innerText = "Score: " + score;
+    } else {
+        lives--;
+        updateLives();
+    }
+
+    if (lives === 0) {
+        gameOver();
+        return;
     }
 
     nextBtn.style.display = "inline-block";
+}
+
+function updateLives() {
+    livesEl.innerText = "❤️".repeat(lives);
+}
+
+function gameOver() {
+    questionEl.innerText = "💀 Game Over!";
+    answersEl.innerHTML = `<h2>Your score: ${score}/15</h2>`;
+    nextBtn.style.display = "none";
+    restartBtn.style.display = "inline-block";
 }
 
 nextBtn.onclick = () => {
@@ -145,7 +181,7 @@ nextBtn.onclick = () => {
     if (current < questions.length) {
         loadQuestion();
     } else {
-        questionEl.innerText = "🎉 Game Over!";
+        questionEl.innerText = "🎉 You Win!";
         answersEl.innerHTML = `<h2>Your score: ${score}/15</h2>`;
         nextBtn.style.display = "none";
         restartBtn.style.display = "inline-block";
@@ -155,7 +191,9 @@ nextBtn.onclick = () => {
 restartBtn.onclick = () => {
     score = 0;
     current = 0;
+    lives = 3;
     scoreEl.innerText = "Score: 0";
+    updateLives();
     restartBtn.style.display = "none";
     loadQuestion();
 };
