@@ -23,9 +23,11 @@ header {
     margin-top: 40px;
 }
 
+/* RESPUESTAS CENTRADAS */
 #answers {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 15px;
     margin-top: 20px;
 }
 
@@ -35,6 +37,11 @@ button {
     border-radius: 12px;
     font-size: 16px;
     cursor: pointer;
+    min-width: 180px;
+}
+
+button:hover {
+    transform: scale(1.05);
 }
 
 .correct { background-color: #28a745; }
@@ -53,7 +60,7 @@ button {
 }
 
 #lives {
-    font-size: 20px;
+    font-size: 22px;
 }
 </style>
 
@@ -122,8 +129,11 @@ function loadQuestion() {
         correct: index === q.correct
     }));
 
-    // Mezclar respuestas
-    answers.sort(() => Math.random() - 0.5);
+    // 🔥 MEZCLA REAL (Fisher-Yates)
+    for (let i = answers.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [answers[i], answers[j]] = [answers[j], answers[i]];
+    }
 
     answers.forEach((answer) => {
         let btn = document.createElement("button");
