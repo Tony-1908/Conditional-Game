@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditional Quest</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    text-align: center;
+}
+
+header {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+}
+
+.container {
+    margin-top: 40px;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+.correct { background-color: #28a745; }
+.wrong { background-color: #dc3545; }
+
+#nextBtn {
+    display: none;
+    background-color: #ffc107;
+    color: black;
+}
+
+#restartBtn {
+    display: none;
+    background-color: #007bff;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>🎮 Conditional Quest</h1>
+    <p>Learn English Conditionals while playing</p>
+</header>
+
+<div class="container">
+    <h2 id="score">Score: 0</h2>
+    <p id="question"></p>
+
+    <div id="answers"></div>
+
+    <button id="nextBtn">Next</button>
+    <button id="restartBtn">Restart</button>
+</div>
+
+<script>
+
+let score = 0;
+let current = 0;
+
+const questions = [
+
+{ q: "If you heat water, ____.", a: ["it boils", "it will boil", "it would boil"], correct: 0 },
+{ q: "If it rains, ____.", a: ["the ground gets wet", "the ground will wet", "the ground would wet"], correct: 0 },
+{ q: "If you mix red and blue, ____.", a: ["you get purple", "you will get purple", "you would get purple"], correct: 0 },
+
+{ q: "If I study, ____.", a: ["I will pass the exam", "I pass the exam", "I would pass the exam"], correct: 0 },
+{ q: "If you run fast, ____.", a: ["you will win", "you win", "you would win"], correct: 0 },
+{ q: "If we hurry, ____.", a: ["we will arrive early", "we arrive early", "we would arrive early"], correct: 0 },
+{ q: "If she practices, ____.", a: ["she will improve", "she improves always", "she would improve"], correct: 0 },
+{ q: "If they call me, ____.", a: ["I will answer", "I answer", "I would answer"], correct: 0 },
+
+{ q: "If I were rich, ____.", a: ["I would travel the world", "I will travel the world", "I travel the world"], correct: 0 },
+{ q: "If I had a car, ____.", a: ["I would drive to school", "I will drive to school", "I drive to school"], correct: 0 },
+{ q: "If she studied more, ____.", a: ["she would pass", "she will pass", "she passes"], correct: 0 },
+{ q: "If we lived near the beach, ____.", a: ["we would swim every day", "we will swim every day", "we swim every day"], correct: 0 },
+
+{ q: "If I had studied, ____.", a: ["I would have passed the test", "I will pass the test", "I pass the test"], correct: 0 },
+{ q: "If they had left earlier, ____.", a: ["they would have arrived on time", "they will arrive on time", "they arrive on time"], correct: 0 },
+{ q: "If she had listened, ____.", a: ["she would have understood", "she will understand", "she understands"], correct: 0 }
+
+];
+
+const questionEl = document.getElementById("question");
+const answersEl = document.getElementById("answers");
+const scoreEl = document.getElementById("score");
+const nextBtn = document.getElementById("nextBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+function loadQuestion() {
+    let q = questions[current];
+    questionEl.innerText = q.q;
+    answersEl.innerHTML = "";
+
+    q.a.forEach((answer, index) => {
+        let btn = document.createElement("button");
+        btn.innerText = answer;
+        btn.onclick = () => checkAnswer(index);
+        answersEl.appendChild(btn);
+    });
+
+    nextBtn.style.display = "none";
+}
+
+function checkAnswer(index) {
+    let q = questions[current];
+    let buttons = document.querySelectorAll("#answers button");
+
+    buttons.forEach((btn, i) => {
+        if (i === q.correct) {
+            btn.classList.add("correct");
+        } else {
+            btn.classList.add("wrong");
+        }
+        btn.disabled = true;
+    });
+
+    if (index === q.correct) {
+        score++;
+        scoreEl.innerText = "Score: " + score;
+    }
+
+    nextBtn.style.display = "inline-block";
+}
+
+nextBtn.onclick = () => {
+    current++;
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        questionEl.innerText = "🎉 Game Over!";
+        answersEl.innerHTML = `<h2>Your score: ${score}/15</h2>`;
+        nextBtn.style.display = "none";
+        restartBtn.style.display = "inline-block";
+    }
+};
+
+restartBtn.onclick = () => {
+    score = 0;
+    current = 0;
+    scoreEl.innerText = "Score: 0";
+    restartBtn.style.display = "none";
+    loadQuestion();
+};
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
